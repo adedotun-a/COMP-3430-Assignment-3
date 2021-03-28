@@ -27,7 +27,7 @@ int count_priority[3] = {0, 0, 0};
 int avg_type_time[4] = {0, 0, 0, 0};
 int avg_priority_time[3] = {0, 0, 0};
 
-int policy;
+POLICY policy;
 int timeSlice = MAXNUM;
 
 node *queues[3];
@@ -96,6 +96,21 @@ int main(int argc, char *argv[])
         return -1;
     }
     void initQueue();
+    num_of_cores += 0;
+    // pthread_t *cpu_ids = malloc(sizeof(pthread_t) * num_of_cores);
+    // for (int i = 0; i < num_of_cores; i++) //create threads for CPUS
+    // {
+    //     pthread_create(&cpu_ids[i], NULL, CPU, NULL);
+    // }
+
+    // pthread_t tid1;
+
+    // pthread_create(&tid1, NULL, dispatcher, NULL); //create thread for sheduler
+    // for (int i = 0; i < num_of_cores; i++)
+    // {
+    //     pthread_join(cpu_ids[i], NULL);
+    // }
+    // print_stats();
 }
 
 void update_metrics(int priority, int time, taskType type)
@@ -176,89 +191,89 @@ void initQueue()
         {
             if (temp->priority == 0)
             {
-                queue0 = addToReadyQ(queue0, temp);
+                queue0 = addToQueue(queue0, temp);
             }
             else if (temp->priority == 1)
             {
-                queue1 = addToReadyQ(queue1, temp);
+                queue1 = addToQueue(queue1, temp);
             }
             else
             {
-                queue2 = addToReadyQ(queue2, temp);
+                queue2 = addToQueue(queue2, temp);
             }
         }
         else
         {
-            queue0 = addToReadyQ(queue0, temp);
+            queue0 = addToQueue(queue0, temp);
         }
     }
 }
 
-void *CPU()
-{
-    int runTime = 0;
-    int run = 1;
+// void *CPU()
+// {
+//     int runTime = 0;
+//     int run = 1;
 
-    while (run == 1)
-    {
+//     while (run == 1)
+//     {
 
-        pthread_mutex_lock(&lock);
-        pthread_cond_wait(&task_avail, &lock); //conditional waiting for the task
+//         pthread_mutex_lock(&lock);
+//         pthread_cond_wait(&task_avail, &lock); //conditional waiting for the task
 
-        task *currTask = getTask();
-        pthread_mutex_unlock(&lock);
+//         task *currTask = getTask();
+//         pthread_mutex_unlock(&lock);
 
-        if (currTask != NULL)
-        {
+//         if (currTask != NULL)
+//         {
 
-            int num = rand() % MAXNUM;
-            if (currTask->taskType == ioTask && num < currTask->oddsOfIO) // if the tasks is an IO task
-            {
-                num = rand() % timeSlice;
-                currTask->taskLength = currTask->taskLength - num;
-                runTime += num;
-            }
-            else
-            {
-                // if the current task's length is more than the time slice
-                if (currTask->taskLength > timeSlice)
-                {
-                    // reduce the tasklength by time slice, then the runtime should increrase by timeslice
-                    currTask->taskLength = currTask->taskLength - timeSlice;
-                    runTime += timeSlice;
-                }
-                else
-                {
-                    // if not runtime should increrase by tasklength and set tasklenth to 0
-                    runTime += currTask->taskLength;
-                    currTask->taskLength = 0;
-                }
-            }
+//             int num = rand() % MAXNUM;
+//             if (currTask->taskType == ioTask && num < currTask->oddsOfIO) // if the tasks is an IO task
+//             {
+//                 num = rand() % timeSlice;
+//                 currTask->taskLength = currTask->taskLength - num;
+//                 runTime += num;
+//             }
+//             else
+//             {
+//                 // if the current task's length is more than the time slice
+//                 if (currTask->taskLength > timeSlice)
+//                 {
+//                     // reduce the tasklength by time slice, then the runtime should increrase by timeslice
+//                     currTask->taskLength = currTask->taskLength - timeSlice;
+//                     runTime += timeSlice;
+//                 }
+//                 else
+//                 {
+//                     // if not runtime should increrase by tasklength and set tasklenth to 0
+//                     runTime += currTask->taskLength;
+//                     currTask->taskLength = 0;
+//                 }
+//             }
 
-            //if the task has been completed
-            if (currTask->taskLength <= 0)
-            {
-                pthread_mutex_lock(&lock2);
-                update_metrics(currTask->priority, runTime, currTask->taskType);
-                pthread_mutex_unlock(&lock2);
-            }
-            else
-            { //return task the running scheduler
+//             //if the task has been completed
+//             if (currTask->taskLength <= 0)
+//             {
+//                 pthread_mutex_lock(&lock2);
+//                 update_metrics(currTask->priority, runTime, currTask->taskType);
+//                 pthread_mutex_unlock(&lock2);
+//             }
+//             else
+//             { //return task the running scheduler
 
-                pthread_mutex_lock(&lock);
-                returnTask(currTask);
-                pthread_mutex_unlock(&lock);
-            }
-        }
+//                 pthread_mutex_lock(&lock);
+//                 returnTask(currTask);
+//                 pthread_mutex_unlock(&lock);
+//             }
+//         }
 
-        pthread_mutex_lock(&lock);
-        // if all the queues are emepty stop running the cpus
-        if (!queue0 && !queue1 && !queue2)
-        {
-            run = 0;
-        }
-        pthread_mutex_unlock(&lock);
-    }
+//         pthread_mutex_lock(&lock);
+//         // if all the queues are emepty stop running the cpus
+//         if (!queue0 && !queue1 && !queue2)
+//         {
+//             run = 0;
+//         }
+//         pthread_mutex_unlock(&lock);
+//     }
 
-    pthread_exit(NULL);
-}
+//     pthread_exit(NULL);
+// }

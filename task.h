@@ -27,6 +27,6 @@ typedef enum POLICY
     PRR,
     STCF,
     MLQ,
-} policy;
+} POLICY;
 
 #endif
