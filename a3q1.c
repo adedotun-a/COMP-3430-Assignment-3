@@ -18,6 +18,8 @@
 #include <semaphore.h>
 #include "queue.h"
 
+#define MAXNUM 100
+
 //Variables
 int count_type[4] = {0, 0, 0, 0};
 int count_priority[3] = {0, 0, 0};
@@ -26,7 +28,7 @@ int avg_type_time[4] = {0, 0, 0, 0};
 int avg_priority_time[3] = {0, 0, 0};
 
 int policy;
-int timeSlice = 100;
+int timeSlice = MAXNUM;
 
 node *queue0; //highest queue (priority 2)
 node *queue1; //medium priority queue
@@ -95,7 +97,7 @@ void *dispatcher()
 
 void initQueue(char *filename)
 {
-    char buffer[100];
+    char buffer[MAXNUM];
     char *data[6];
     FILE *file;
     char path[3 + strlen(filename)];
@@ -109,7 +111,7 @@ void initQueue(char *filename)
         exit(1);
     }
 
-    while (fgets(buffer, 100, file) != NULL)
+    while (fgets(buffer, MAXNUM, file) != NULL)
     {
         task *temp = malloc(sizeof(task));
 
@@ -159,7 +161,7 @@ void *CPU()
         if (tempTask != NULL)
         {
 
-            int num = rand() % 100;
+            int num = rand() % MAXNUM;
             if (tempTask->taskType == ioTask && num < tempTask->odds_of_IO) // if the tasks is an IO task
             {
                 num = rand() % timeSlice;
