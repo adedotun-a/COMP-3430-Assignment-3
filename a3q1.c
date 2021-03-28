@@ -154,39 +154,43 @@ void *CPU()
         pthread_mutex_lock(&lock);
         pthread_cond_wait(&task_avail, &lock); //conditional waiting for the task
 
-        task *tempTask = getTask();
+        task *currTask = getTask();
         pthread_mutex_unlock(&lock);
 
-        if (tempTask != NULL)
+        if (currTask != NULL)
         {
 
             int num = rand() % MAXNUM;
-            if (tempTask->taskType == ioTask && num < tempTask->odds_of_IO) // if the tasks is an IO task
+            if (currTask->taskType == ioTask && num < currTask->odds_of_IO) // if the tasks is an IO task
             {
                 num = rand() % timeSlice;
-                tempTask->task_length = tempTask->task_length - num;
+                currTask->task_length = currTask->task_length - num;
                 runTime += num;
             }
             else
             {
-                if (tempTask->task_length > timeSlice)
+                // if the current task's length is more than the time slice
+                if (currTask->task_length > timeSlice)
                 {
-                    tempTask->task_length = tempTask->task_length - timeSlice;
+                    // reduce the tasklength by time slice, then the runtime should increrase by timeslice
+                    currTask->task_length = currTask->task_length - timeSlice;
                     runTime += timeSlice;
                 }
                 else
                 {
-                    runTime += tempTask->task_length;
-                    tempTask->task_length = 0;
+                    // if not runtime should increrase by tasklength and set tasklenth to 0
+                    runTime += currTask->task_length;
+                    currTask->task_length = 0;
                 }
             }
 
-            if (tempTask->task_length <= 0) //task has been completed
+            //if the task has been completed
+            if (currTask->task_length <= 0)
             {
                 metrics s;
-                s.priority = tempTask->priority;
+                s.priority = currTask->priority;
                 s.time = runTime;
-                s.type = tempTask->taskType;
+                s.type = currTask->taskType;
 
                 pthread_mutex_lock(&lock2);
                 update_metrics(s);
@@ -196,12 +200,13 @@ void *CPU()
             { //return task to scheduler
 
                 pthread_mutex_lock(&lock);
-                returnTask(tempTask);
+                returnTask(currTask);
                 pthread_mutex_unlock(&lock);
             }
         }
 
         pthread_mutex_lock(&lock);
+        // if all the queues are emepty stop running the cpus
         if (!queue0 && !queue1 && !queue2)
         {
             run = 0;
