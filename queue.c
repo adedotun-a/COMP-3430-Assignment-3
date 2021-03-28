@@ -36,6 +36,7 @@ node *addToQueue(node *head, task *task)
     {
         head = new_task;
     }
+    // else if queue is not empty
     else
     {
         node *curr = head;
@@ -51,30 +52,30 @@ node *addToQueue(node *head, task *task)
 
 node *sortQueue(node *head)
 {
-    node *current = head;
+    node *curr = head;
     node *index = NULL;
     task *temp = NULL;
 
     if (head != NULL)
     {
-        while (current != NULL)
+        while (curr != NULL)
         {
-            //Node index will point to node next to current
-            index = current->next;
+            //Node index will point to node next to curr
+            index = curr->next;
 
             while (index != NULL)
             {
-                //If current node's data is greater than index's node data, swap the data between them
-                if (current->task->task_length > index->task->task_length)
+                //If curr node's data is greater than index's node data, swap the data between them
+                if (curr->task->task_length > index->task->task_length)
                 {
                     //swap
-                    temp = current->task;
-                    current->task = index->task;
+                    temp = curr->task;
+                    curr->task = index->task;
                     index->task = temp;
                 }
                 index = index->next;
             }
-            current = current->next;
+            curr = curr->next;
         }
     }
 
