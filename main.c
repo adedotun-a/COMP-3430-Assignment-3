@@ -29,6 +29,8 @@ int totalPriorityTime[3] = {0, 0, 0};
 POLICY policy;
 int timeSlice = 5;
 
+int run = 1;
+
 node *queues[3];
 node *queue0; //priority 0 queue (high)
 node *queue1; //priority 1  queue (med)
@@ -44,7 +46,7 @@ pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
 
 void initQueue();
 void *CPU();
-void print_stats();
+void printMetrics();
 TASK *getTask();
 void returnTask(TASK *t);
 TASK *SJF();
@@ -79,6 +81,7 @@ int main(int argc, char *argv[])
         printf("Please enter a valid policy\n");
         return -1;
     }
+    printf("Using pure round-robin with %d CPUs.\n", numCores);
     initQueue();
     // numCores += 0;
     pthread_t *pIds = malloc(sizeof(pthread_t) * numCores);
@@ -94,14 +97,14 @@ int main(int argc, char *argv[])
     {
         pthread_join(pIds[i], NULL);
     }
-    print_stats();
+    printMetrics();
 }
 
 void update_metrics(int priority, int time, taskType type)
 {
     //update metric arrays
     countType[type] += 1;
-    countPriority[type] += 1;
+    countPriority[priority] += 1;
     totalTypeTime[type] += time;
     totalPriorityTime[priority] += time;
 }
@@ -123,7 +126,6 @@ void *dispatcher()
 
 void initQueue()
 {
-    printf("Initializing the queue\n");
     FILE *file = fopen("tasks.txt", "r");
 
     if (file == NULL)
@@ -161,9 +163,9 @@ void initQueue()
 void *CPU()
 {
     int runTime = 0;
-    int run = 1;
+    int runCPU = 1;
 
-    while (run == 1)
+    while (runCPU == 1)
     {
 
         pthread_mutex_lock(&lock);
@@ -219,7 +221,7 @@ void *CPU()
         // if all the queues are emepty stop running the cpus
         if (!queue0 && !queue1 && !queue2)
         {
-            run = 0;
+            runCPU = 0;
         }
         pthread_mutex_unlock(&lock);
     }
@@ -227,17 +229,27 @@ void *CPU()
     pthread_exit(NULL);
 }
 
-void print_stats()
+void printMetrics()
 {
-    printf("Average run time per priority:\n");
+    printf("\nAverage run time per priority:\n");
     for (int i = 0; i < 3; i++)
     {
-        printf("Priority %d average run time: %d\n", i, totalTypeTime[i] / countType[i]);
+        if (countPriority[i] > 0)
+            printf("Priority %d average run time: %d\n", i, totalPriorityTime[i] / countPriority[i]);
+        else
+        {
+            printf("Priority %d average run time: %d\n", i, 0);
+        }
     }
     printf("\nAverage run time per type:\n");
     for (int i = 0; i < 4; i++)
     {
-        printf("Type %d average run time: %d\n", i, totalPriorityTime[i] / countPriority[i]);
+        if (countType[i] > 0)
+            printf("Type %d average run time: %d\n", i, totalTypeTime[i] / countType[i]);
+        else
+        {
+            printf("Type %d average run time: %d\n", i, 0);
+        }
     }
 }
 
@@ -257,8 +269,8 @@ TASK *getTask()
     {
         t = MLFQueue();
     }
-    // if (t)
-    //     run--;
+    if (t)
+        run--;
     return t;
 }
 
@@ -290,7 +302,7 @@ void returnTask(TASK *t) //task returned to scheduler
             queue2 = addToQueue(queue2, t);
         }
     }
-    // run++;
+    run++;
     // if (queue0 || queue1 || queue2)
     // {
     //     // dispatcher();
