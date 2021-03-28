@@ -10,13 +10,13 @@ typedef enum ID
     medTask,
     longTask,
     ioTask
-} id;
+} taskType;
 
 //task struct
 typedef struct TASK
 {
     char *task_name;
-    id task_type;
+    taskType taskType;
     int priority;
     int task_length;
     int odds_of_IO;
@@ -26,7 +26,7 @@ typedef struct METRICS
 {
     int priority;
     int time;
-    id type;
+    taskType type;
 } metrics;
 
 typedef enum POLICY
