@@ -15,10 +15,10 @@ CFLAGS=-c -Wall -Wpedantic -Wextra -Werror
 all: a3q1
 
 a3q1: main.o queue.o 
-	$(CC)  -lpthread main.o queue.o -o a3q1
+	$(CC)  main.o queue.o -o a3q1
 
 main.o: main.c task.h queue.h
-	$(CC) $(CFLAGS) -lpthread main.c task.h queue.h
+	$(CC) $(CFLAGS) main.c task.h queue.h
 
 queue.o: queue.c task.h queue.h
 	$(CC) $(CFLAGS)  queue.c task.h queue.h
