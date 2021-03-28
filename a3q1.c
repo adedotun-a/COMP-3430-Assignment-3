@@ -26,6 +26,7 @@ int avg_type_time[4] = {0, 0, 0, 0};
 int avg_priority_time[3] = {0, 0, 0};
 
 int policy;
+int timeSlice = 100;
 
 node *queue0; //highest queue (priority 2)
 node *queue1; //medium priority queue
@@ -92,70 +93,27 @@ void *dispatcher()
     pthread_exit(NULL);
 }
 
-void populate(Queue *arr)
-{
-
-    char info[50];
-    char *data[6];
-    FILE *fp = fopen("process_config.txt", "r");
-    if (fp == NULL)
-    {
-        printf("file open failed\n");
-        exit(1);
-    }
-    else
-    {
-        int count = 0;
-        while ((fgets(info, 50, fp) != NULL) && (size(arr) < getLimit(arr)))
-        {
-            count++;
-            char *tok = strtok(info, " \n");
-            int i = 0;
-            while (tok != NULL)
-            {
-                data[i++] = tok;
-                tok = strtok(NULL, " \n");
-            }
-            process *newProc = (process *)malloc(sizeof(process));
-            newProc->name = (char *)malloc(sizeof(char) * 10);
-            strcpy(newProc->name, data[0]);
-            newProc->type = atoi(data[1]);
-            newProc->pty = atoi(data[2]);
-            newProc->runTime = atoi(data[3]);
-            newProc->max_runTime = atoi(data[3]);
-            newProc->startTime = atoi(data[4]);
-            newProc->ioPercent = atoi(data[5]);
-            queuePty(arr, newProc, "startTime");
-            count_type[newProc->type]++;
-            count_priority[newProc->pty]++;
-        }
-    }
-}
-
 void initQueue(char *filename)
 {
-    // int in = 0;
+    char buffer[100];
+    char *data[6];
     FILE *file;
-    // int bufferSize = 100;
-    // char buffer[bufferSize];
     char path[3 + strlen(filename)];
     strcpy(path, "./");
     strcat(path, filename);
     file = fopen(filename, "r");
+
     if (file == NULL)
     {
         perror("Unable to open file!");
         exit(1);
     }
-    char *line = NULL;
-    size_t len = 0;
 
-    while (getline(&line, &len, file) != -1)
+    while (fgets(buffer, 100, file) != NULL)
     {
-
         task *temp = malloc(sizeof(task));
 
-        strcpy(temp->task_name, strtok(line, " "));
+        strcpy(temp->task_name, strtok(buffer, " "));
         temp->taskType = atoi(strtok(NULL, " "));
         temp->priority = atoi(strtok(NULL, " "));
         temp->task_length = atoi(strtok(NULL, " "));
@@ -182,4 +140,90 @@ void initQueue(char *filename)
             queue0 = addToReadyQ(queue0, temp);
         }
     }
+}
+
+void *CPU()
+{
+    int local_time = 0;
+    int flag = 1;
+
+    while (flag == 1)
+    {
+
+        pthread_mutex_lock(&lock);
+        pthread_cond_wait(&task_avail, &lock); //conditional waiting for the task
+
+        task *tempTask = getTask();
+        pthread_mutex_unlock(&lock);
+
+        if (tempTask != NULL)
+        {
+
+            int num = -1;
+            if (tempTask->taskType == 3) //IO task
+            {
+                num = rand() % 100;
+                if (num > tempTask->odds_of_IO) //IO will occur now
+                {
+                    num = rand() % timeSlice;
+                    tempTask->task_length = tempTask->task_length - num;
+                    local_time += num;
+                }
+                else
+                {
+                    if (tempTask->task_length > timeSlice)
+                    {
+                        tempTask->task_length = tempTask->task_length - timeSlice;
+                        local_time += timeSlice;
+                    }
+                    else
+                    {
+                        local_time += tempTask->task_length;
+                        tempTask->task_length = 0;
+                    }
+                }
+            }
+            else
+            {
+                if (tempTask->task_length > timeSlice)
+                {
+                    tempTask->task_length = tempTask->task_length - timeSlice;
+                    local_time += timeSlice;
+                }
+                else
+                {
+                    local_time += tempTask->task_length;
+                    tempTask->task_length = 0;
+                }
+            }
+
+            if (tempTask->task_length <= 0) //task has been completed
+            {
+                metrics s;
+                s.priority = tempTask->priority;
+                s.time = local_time;
+                s.type = tempTask->taskType;
+
+                pthread_mutex_lock(&lock2);
+                update_metrics(s);
+                pthread_mutex_unlock(&lock2);
+            }
+            else
+            { //return task to scheduler
+
+                pthread_mutex_lock(&lock);
+                returnTask(tempTask);
+                pthread_mutex_unlock(&lock);
+            }
+        }
+
+        pthread_mutex_lock(&lock);
+        if (!queue0 && !queue1 && !queue2)
+        {
+            flag = 0;
+        }
+        pthread_mutex_unlock(&lock);
+    }
+
+    pthread_exit(NULL);
 }
