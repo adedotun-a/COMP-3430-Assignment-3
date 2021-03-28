@@ -14,7 +14,6 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <string.h>
-#include <pthread.h>
 #include <semaphore.h>
 #include "queue.h"
 
