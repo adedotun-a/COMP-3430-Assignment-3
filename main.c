@@ -51,6 +51,7 @@ void returnTask(TASK *t);
 TASK *SJF();
 TASK *roundRobin();
 TASK *MLFQueue();
+void *dispatcher();
 
 // main
 int main(int argc, char *argv[])
