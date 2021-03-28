@@ -67,21 +67,24 @@ int main(int argc, char *argv[])
     if (strcmp(argv[2], "rr") == 0)
     {
         policy = PRR;
+        printf("Using pure round-robin with %d CPUs.\n", numCores);
     }
     else if (strcmp(argv[2], "stcf") == 0)
     {
         policy = STCF;
+        printf("Using shortest time to completion first with %d CPUs.\n", numCores);
     }
     else if (strcmp(argv[2], "mlfq") == 0)
     {
         policy = MLQ;
+        printf("Using the multi-level feedback queue with %d CPUs.\n", numCores);
     }
     else
     {
         printf("Please enter a valid policy\n");
         return -1;
     }
-    printf("Using pure round-robin with %d CPUs.\n", numCores);
+
     initQueue();
     // numCores += 0;
     pthread_t *pIds = malloc(sizeof(pthread_t) * numCores);
