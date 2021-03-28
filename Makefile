@@ -18,11 +18,11 @@ all: a3q1
 a3q1: main.o queue.o 
 	$(CC) main.o queue.o -o a3q1
 
-main.o: main.c queue.h
-	$(CC) $(CFLAGS)  main.c queue.h task.h
+main.o: main.c task.h queue.h
+	$(CC) $(CFLAGS)  main.c task.h queue.h
 
-Queue.o: Queue.c queue.h
-	$(CC) $(CFLAGS)  queue.c task.h
+queue.o: queue.c task.h queue.h
+	$(CC) $(CFLAGS)  queue.c task.h queue.h
 
 clean:
 	rm a3q1 main.o queue.o queue.h.gch task.h.gch
