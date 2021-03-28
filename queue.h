@@ -4,7 +4,7 @@
 #define QUEUE_HEADER
 #include <stdio.h>
 #include <string.h>
-#define ERROR -1000
+// #define ERROR -1000
 
 typedef struct QUEUE Queue;
 
@@ -33,6 +33,13 @@ typedef struct METRICS
     int time;
     id type;
 } metrics;
+
+typedef enum POLICY
+{
+    PRR,
+    STCF,
+    MLQ,
+} policy;
 
 //Queue
 void initQueue(Queue *rdy, int size);
