@@ -92,6 +92,46 @@ void *dispatcher()
     pthread_exit(NULL);
 }
 
+void populate(Queue *arr)
+{
+
+    char info[50];
+    char *data[6];
+    FILE *fp = fopen("process_config.txt", "r");
+    if (fp == NULL)
+    {
+        printf("file open failed\n");
+        exit(1);
+    }
+    else
+    {
+        int count = 0;
+        while ((fgets(info, 50, fp) != NULL) && (size(arr) < getLimit(arr)))
+        {
+            count++;
+            char *tok = strtok(info, " \n");
+            int i = 0;
+            while (tok != NULL)
+            {
+                data[i++] = tok;
+                tok = strtok(NULL, " \n");
+            }
+            process *newProc = (process *)malloc(sizeof(process));
+            newProc->name = (char *)malloc(sizeof(char) * 10);
+            strcpy(newProc->name, data[0]);
+            newProc->type = atoi(data[1]);
+            newProc->pty = atoi(data[2]);
+            newProc->runTime = atoi(data[3]);
+            newProc->max_runTime = atoi(data[3]);
+            newProc->startTime = atoi(data[4]);
+            newProc->ioPercent = atoi(data[5]);
+            queuePty(arr, newProc, "startTime");
+            count_type[newProc->type]++;
+            count_priority[newProc->pty]++;
+        }
+    }
+}
+
 void initQueue(char *filename)
 {
     // int in = 0;
