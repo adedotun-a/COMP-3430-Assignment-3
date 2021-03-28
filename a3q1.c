@@ -82,8 +82,8 @@ void update_metrics(metrics s)
 
 void *dispatcher()
 { //alert the CPUs that a task is available
-    int flag = 1;
-    while (flag == 1)
+    int runDispatch = 1;
+    while (runDispatch == 1)
     {
         pthread_mutex_lock(&lock);
 
@@ -123,7 +123,6 @@ void initQueue(char *filename)
 
         if (policy == MLQ)
         {
-
             if (temp->priority == 0)
             {
                 queue0 = addToReadyQ(queue0, temp);
@@ -147,9 +146,9 @@ void initQueue(char *filename)
 void *CPU()
 {
     int runTime = 0;
-    int flag = 1;
+    int run = 1;
 
-    while (flag == 1)
+    while (run == 1)
     {
 
         pthread_mutex_lock(&lock);
@@ -205,7 +204,7 @@ void *CPU()
         pthread_mutex_lock(&lock);
         if (!queue0 && !queue1 && !queue2)
         {
-            flag = 0;
+            run = 0;
         }
         pthread_mutex_unlock(&lock);
     }
