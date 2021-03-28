@@ -74,7 +74,7 @@ void update_metrics(metrics s)
 }
 
 void *dispatcher()
-{ //tell the CPU when task are available
+{ //alert the CPUs that a task is available
     int flag = 1;
     while (flag == 1)
     {
