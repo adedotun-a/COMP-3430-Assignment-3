@@ -44,6 +44,13 @@ pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
 
 void initQueue();
+void *CPU();
+void print_stats();
+task *getTask();
+void returnTask(task *t);
+task *SJF();
+task *roundRobin();
+task *MLFQueue();
 
 // main
 int main(int argc, char *argv[])
