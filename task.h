@@ -22,13 +22,6 @@ typedef struct TASK
     int odds_of_IO;
 } task;
 
-typedef struct METRICS
-{
-    int priority;
-    int time;
-    taskType type;
-} metrics;
-
 typedef enum POLICY
 {
     PRR,

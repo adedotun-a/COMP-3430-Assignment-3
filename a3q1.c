@@ -72,13 +72,13 @@ int main(int argc, char *argv[])
     }
 }
 
-void update_metrics(metrics s)
+void update_metrics(int priority, int time, taskType type)
 {
     //update metric arrays
-    count_type[s.type] += 1;
-    count_priority[s.type] += 1;
-    avg_type_time[s.type] += s.time;
-    avg_priority_time[s.priority] += s.time;
+    count_type[type] += 1;
+    count_priority[type] += 1;
+    avg_type_time[type] += time;
+    avg_priority_time[priority] += time;
 }
 
 void *dispatcher()
@@ -188,13 +188,8 @@ void *CPU()
             //if the task has been completed
             if (currTask->task_length <= 0)
             {
-                metrics s;
-                s.priority = currTask->priority;
-                s.time = runTime;
-                s.type = currTask->taskType;
-
                 pthread_mutex_lock(&lock2);
-                update_metrics(s);
+                update_metrics(currTask->priority, runTime, currTask->taskType);
                 pthread_mutex_unlock(&lock2);
             }
             else
