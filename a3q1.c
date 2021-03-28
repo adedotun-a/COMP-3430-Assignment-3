@@ -27,6 +27,14 @@ int avg_priority_time[3] = {0, 0, 0};
 
 int policy;
 
+//declaring condition variables
+pthread_cond_t task_avail = PTHREAD_COND_INITIALIZER;
+pthread_cond_t cpu_avail = PTHREAD_COND_INITIALIZER;
+// declaring mutex
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
+pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
+
 // main
 int main(int argc, char *argv[])
 {
@@ -63,4 +71,19 @@ void update_metrics(metrics s)
     count_priority[s.type] += 1;
     avg_type_time[s.type] += s.time;
     avg_priority_time[s.priority] += s.time;
+}
+
+void *dispatcher()
+{ //tell the CPU when task are available
+    int flag = 1;
+    while (flag == 1)
+    {
+        pthread_mutex_lock(&lock);
+
+        pthread_cond_signal(&task_avail);
+
+        pthread_mutex_unlock(&lock);
+    }
+
+    pthread_exit(NULL);
 }
