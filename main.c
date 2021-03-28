@@ -329,7 +329,7 @@ task *MLFQueue()
     if (queue0)
     {
         temp = queue0;
-        queue0 = ready_Q->next;
+        queue0 = queue0->next;
         return temp->t;
     }
     else if (queue1)
