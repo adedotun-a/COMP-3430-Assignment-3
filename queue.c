@@ -12,15 +12,15 @@
 #include <string.h>
 #include "queue.h"
 
-typedef struct QNode
+struct QNode
 {
     task *task;
     struct QNode *next;
-} node;
+};
 
 node *newNode(task *task)
 {
-    node *temp = (node *)malloc(sizeof(queue));
+    node *temp = (node *)malloc(sizeof(node));
     temp->task = task;
     temp->next = NULL;
     return temp;
@@ -52,30 +52,30 @@ node *addToQueue(node *head, task *task)
 
 node *sortQueue(node *head)
 {
-    node *curr = head;
-    node *index = NULL;
+    node *prev = head;
+    node *curr = NULL;
     task *temp = NULL;
 
     if (head != NULL)
     {
-        while (curr != NULL)
+        while (prev != NULL)
         {
-            //Node index will point to node next to curr
-            index = curr->next;
+            //The curr node points to the node after prev
+            curr = prev->next;
 
-            while (index != NULL)
+            while (curr != NULL)
             {
-                //If curr node's data is greater than index's node data, swap the data between them
-                if (curr->task->task_length > index->task->task_length)
+                //If previous node's task_length is greater than current node's task_length, swap the tasks
+                if (prev->task->task_length > curr->task->task_length)
                 {
                     //swap
-                    temp = curr->task;
-                    curr->task = index->task;
-                    index->task = temp;
+                    temp = prev->task;
+                    prev->task = curr->task;
+                    curr->task = temp;
                 }
-                index = index->next;
+                curr = curr->next;
             }
-            curr = curr->next;
+            prev = prev->next;
         }
     }
 

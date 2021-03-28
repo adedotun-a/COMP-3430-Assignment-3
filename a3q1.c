@@ -27,6 +27,10 @@ int avg_priority_time[3] = {0, 0, 0};
 
 int policy;
 
+node *ready_Q; //highest queue (priority 2)
+node *queue1;  //medium priority queue
+node *queue0;  //low priority queue
+
 //declaring condition variables
 pthread_cond_t task_avail = PTHREAD_COND_INITIALIZER;
 pthread_cond_t cpu_avail = PTHREAD_COND_INITIALIZER;
@@ -86,4 +90,56 @@ void *dispatcher()
     }
 
     pthread_exit(NULL);
+}
+
+void populate_ready_queue(char *fname)
+{
+    // int in = 0;
+    FILE *file;
+    // int bufferSize = 100;
+    // char buffer[bufferSize];
+    char path[3 + strlen(fname)];
+    strcpy(path, "./");
+    strcat(path, fname);
+    file = fopen(fname, "r");
+    if (file == NULL)
+    {
+        perror("Unable to open file!");
+        exit(1);
+    }
+    char *line = NULL;
+    size_t len = 0;
+
+    while (getline(&line, &len, file) != -1)
+    {
+
+        task *t = malloc(sizeof(task));
+
+        strcpy(t->task_name, strtok(line, " "));
+        t->taskType = atoi(strtok(NULL, " "));
+        t->priority = atoi(strtok(NULL, " "));
+        t->task_length = atoi(strtok(NULL, " "));
+        t->odds_of_IO = atoi(strtok(NULL, "\n"));
+
+        if (policy == MLFQ)
+        {
+
+            if (t->priority == 0)
+            {
+                queue0 = addToReadyQ(queue0, t);
+            }
+            else if (t->priority == 1)
+            {
+                queue1 = addToReadyQ(queue1, t);
+            }
+            else
+            {
+                ready_Q = addToReadyQ(ready_Q, t);
+            }
+        }
+        else
+        {
+            ready_Q = addToReadyQ(ready_Q, t);
+        }
+    }
 }
