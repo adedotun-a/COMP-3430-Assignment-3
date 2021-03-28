@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
         printf("Enter valid policy\n");
         return -1;
     }
+    void initQueue();
 }
 
 void update_metrics(int priority, int time, taskType type)
@@ -96,15 +97,15 @@ void *dispatcher()
     pthread_exit(NULL);
 }
 
-void initQueue(char *filename)
+void initQueue()
 {
-    char buffer[MAXNUM];
-    char *data[6];
+    // char buffer[MAXNUM];
+    // char *data[6];
     FILE *file;
-    char path[3 + strlen(filename)];
-    strcpy(path, "./");
-    strcat(path, filename);
-    file = fopen(filename, "r");
+    // char path[3 + strlen(filename)];
+    // strcpy(path, "./");
+    // strcat(path, filename);
+    file = fopen("tasks.txt", "r");
 
     if (file == NULL)
     {
@@ -145,6 +146,7 @@ void initQueue(char *filename)
     task *temp = malloc(sizeof(task));
     while (fscanf(file, "%s %d %d %d %d\n", temp->taskName, temp->taskType, temp->priority, temp->taskLength, temp->oddsOfIO))
     {
+        printf("%s %d %d %d %d\n", temp->taskName, temp->taskType, temp->priority, temp->taskLength, temp->oddsOfIO);
         if (policy == MLQ)
         {
             if (temp->priority == 0)
