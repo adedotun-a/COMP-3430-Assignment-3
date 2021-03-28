@@ -12,33 +12,41 @@
 #include <string.h>
 #include "queue.h"
 
-typedef struct QUEUE
+typedef struct QNode
 {
-    task *t;
-    struct QUEUE *next;
-} queue;
+    task *task;
+    struct QNode *next;
+} node;
 
-queue *addToQueue(queue *head, task *t)
+struct QNode *newNode(task *task)
+{
+    struct QNode *temp = (node *)malloc(sizeof(queue));
+    temp->task = task;
+    temp->next = NULL;
+    return temp;
+}
+
+node *addToQueue(node *head, task *task)
 {
 
-    queue *current = head;
-    queue *new_task = (queue *)malloc(sizeof(queue));
-    new_task->t = t;
+    node *curr = head;
+    node *new_task = (node *)malloc(sizeof(queue));
+    new_task->task = task;
     new_task->next = NULL;
 
+    // if queue is empty
     if (head == NULL)
     {
-
         head = new_task;
-
-        return head;
     }
-
-    while (current->next)
+    else
     {
-        current = current->next;
+        while (curr->next)
+        {
+            curr = curr->next;
+        }
+        curr->next = new_task;
     }
-    current->next = new_task;
 
     return head;
 }
