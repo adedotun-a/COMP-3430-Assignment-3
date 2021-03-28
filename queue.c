@@ -67,7 +67,7 @@ node *sortQueue(node *head)
             while (curr != NULL)
             {
                 //If previous node's task_length is greater than current node's task_length, swap the tasks
-                if (prev->task->task_length > curr->task->task_length)
+                if (prev->task->taskLength > curr->task->taskLength)
                 {
                     //swap
                     temp = prev->task;

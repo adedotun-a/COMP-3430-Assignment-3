@@ -112,16 +112,39 @@ void initQueue(char *filename)
         exit(1);
     }
 
-    while (fgets(buffer, MAXNUM, file) != NULL)
+    // while (fgets(buffer, MAXNUM, file) != NULL)
+    // {
+    //     task *temp = malloc(sizeof(task));
+
+    //     strcpy(temp->taskName, strtok(buffer, " "));
+    //     temp->taskType = atoi(strtok(NULL, " "));
+    //     temp->priority = atoi(strtok(NULL, " "));
+    //     temp->taskLength = atoi(strtok(NULL, " "));
+    //     temp->oddsOfIO = atoi(strtok(NULL, "\n"));
+
+    //     if (policy == MLQ)
+    //     {
+    //         if (temp->priority == 0)
+    //         {
+    //             queue0 = addToReadyQ(queue0, temp);
+    //         }
+    //         else if (temp->priority == 1)
+    //         {
+    //             queue1 = addToReadyQ(queue1, temp);
+    //         }
+    //         else
+    //         {
+    //             queue2 = addToReadyQ(queue2, temp);
+    //         }
+    //     }
+    //     else
+    //     {
+    //         queue0 = addToReadyQ(queue0, temp);
+    //     }
+    // }
+    task *temp = malloc(sizeof(task));
+    while (fscanf(file, "%s %d %d %d %d\n", temp->taskName, temp->taskType, temp->priority, temp->taskLength, temp->oddsOfIO))
     {
-        task *temp = malloc(sizeof(task));
-
-        strcpy(temp->task_name, strtok(buffer, " "));
-        temp->taskType = atoi(strtok(NULL, " "));
-        temp->priority = atoi(strtok(NULL, " "));
-        temp->task_length = atoi(strtok(NULL, " "));
-        temp->odds_of_IO = atoi(strtok(NULL, "\n"));
-
         if (policy == MLQ)
         {
             if (temp->priority == 0)
@@ -162,31 +185,31 @@ void *CPU()
         {
 
             int num = rand() % MAXNUM;
-            if (currTask->taskType == ioTask && num < currTask->odds_of_IO) // if the tasks is an IO task
+            if (currTask->taskType == ioTask && num < currTask->oddsOfIO) // if the tasks is an IO task
             {
                 num = rand() % timeSlice;
-                currTask->task_length = currTask->task_length - num;
+                currTask->taskLength = currTask->taskLength - num;
                 runTime += num;
             }
             else
             {
                 // if the current task's length is more than the time slice
-                if (currTask->task_length > timeSlice)
+                if (currTask->taskLength > timeSlice)
                 {
                     // reduce the tasklength by time slice, then the runtime should increrase by timeslice
-                    currTask->task_length = currTask->task_length - timeSlice;
+                    currTask->taskLength = currTask->taskLength - timeSlice;
                     runTime += timeSlice;
                 }
                 else
                 {
                     // if not runtime should increrase by tasklength and set tasklenth to 0
-                    runTime += currTask->task_length;
-                    currTask->task_length = 0;
+                    runTime += currTask->taskLength;
+                    currTask->taskLength = 0;
                 }
             }
 
             //if the task has been completed
-            if (currTask->task_length <= 0)
+            if (currTask->taskLength <= 0)
             {
                 pthread_mutex_lock(&lock2);
                 update_metrics(currTask->priority, runTime, currTask->taskType);
