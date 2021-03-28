@@ -10,6 +10,6 @@
 typedef struct QNode node;
 
 //Queue
-node *addToQueue(node *head, task *task);
+node *addToQueue(node *head, TASK *task);
 node *sortQueue(node *head);
 #endif

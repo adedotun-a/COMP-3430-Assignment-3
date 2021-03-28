@@ -14,11 +14,11 @@
 
 struct QNode
 {
-    task *task;
+    TASK *task;
     struct QNode *next;
 };
 
-node *newNode(task *task)
+node *newNode(TASK *task)
 {
     node *temp = (node *)malloc(sizeof(node));
     temp->task = task;
@@ -26,7 +26,7 @@ node *newNode(task *task)
     return temp;
 }
 
-node *addToQueue(node *head, task *task)
+node *addToQueue(node *head, TASK *task)
 {
 
     node *newTask = newNode(task);
@@ -55,7 +55,7 @@ node *sortQueue(node *head)
 {
     node *prev = head;
     node *curr = NULL;
-    task *temp = NULL;
+    TASK *temp = NULL;
 
     if (head != NULL)
     {

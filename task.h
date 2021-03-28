@@ -20,7 +20,7 @@ typedef struct TASK
     int priority;
     int taskLength;
     int oddsOfIO;
-} task;
+} TASK;
 
 typedef enum POLICY
 {

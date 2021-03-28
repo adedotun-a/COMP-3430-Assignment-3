@@ -46,11 +46,11 @@ pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
 void initQueue();
 void *CPU();
 void print_stats();
-task *getTask();
-void returnTask(task *t);
-task *SJF();
-task *roundRobin();
-task *MLFQueue();
+TASK *getTask();
+void returnTask(TASK *t);
+TASK *SJF();
+TASK *roundRobin();
+TASK *MLFQueue();
 
 // main
 int main(int argc, char *argv[])
@@ -132,7 +132,7 @@ void initQueue()
         exit(1);
     }
 
-    task *temp = malloc(sizeof(task));
+    TASK *temp = malloc(sizeof(TASK));
     while (fscanf(file, "%s %d %d %d %d\n", temp->taskName, &(temp->taskType), &(temp->priority), &(temp->taskLength), &(temp->oddsOfIO)) == 5)
     {
         // printf("%s %d %d %d %d\n", temp->taskName, temp->taskType, temp->priority, temp->taskLength, temp->oddsOfIO);
@@ -169,7 +169,7 @@ void *CPU()
         pthread_mutex_lock(&lock);
         pthread_cond_wait(&task_avail, &lock); //conditional waiting for the task
 
-        task *currTask = getTask();
+        TASK *currTask = getTask();
         pthread_mutex_unlock(&lock);
 
         if (currTask != NULL)
@@ -241,10 +241,10 @@ void print_stats()
     }
 }
 
-task *getTask()
+TASK *getTask()
 {
     //provide the task to the CPU according to the policy
-    task *t = NULL;
+    TASK *t = NULL;
     if (policy == PRR)
     {
         t = roundRobin();
@@ -262,16 +262,16 @@ task *getTask()
     return t;
 }
 
-void returnTask(task *t) //task returned to scheduler
+void returnTask(TASK *t) //task returned to scheduler
 {                        //place the task back in the queue
     if (policy == PRR)
     {
-        queue0 = addToReadyQ(queue0, t);
+        queue0 = addToQueue(queue0, t);
     }
     else if (policy == STCF)
     {
 
-        queue0 = addToReadyQ(queue0, t);
+        queue0 = addToQueue(queue0, t);
         queue0 = sortQueue(queue0);
     }
     else
@@ -279,15 +279,15 @@ void returnTask(task *t) //task returned to scheduler
 
         if (t->priority == 0)
         {
-            queue0 = addToReadyQ(queue0, t);
+            queue0 = addToQueue(queue0, t);
         }
         else if (t->priority == 1)
         {
-            queue1 = addToReadyQ(queue1, t);
+            queue1 = addToQueue(queue1, t);
         }
         else
         {
-            queue2 = addToReadyQ(queue2, t);
+            queue2 = addToQueue(queue2, t);
         }
     }
     // run++;
@@ -297,19 +297,19 @@ void returnTask(task *t) //task returned to scheduler
     // }
 }
 
-task *SJF()
+TASK *SJF()
 { //return shortest task i.e. on the queue head
     node *temp;
     if (queue0)
     {
         temp = queue0;
         queue0 = queue0->next;
-        return temp;
+        return temp->task;
     }
     return NULL;
 }
 
-task *roundRobin()
+TASK *roundRobin()
 {
 
     node *temp;
@@ -322,7 +322,7 @@ task *roundRobin()
     return NULL;
 }
 
-task *MLFQueue()
+TASK *MLFQueue()
 {
     //return task from lower queues only if higher queues are empty
     node *temp;
