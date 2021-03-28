@@ -12,12 +12,6 @@
 #include <string.h>
 #include "queue.h"
 
-struct QNode
-{
-    TASK *task;
-    struct QNode *next;
-};
-
 node *newNode(TASK *task)
 {
     node *temp = (node *)malloc(sizeof(node));

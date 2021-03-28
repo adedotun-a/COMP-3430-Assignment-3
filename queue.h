@@ -7,7 +7,11 @@
 #include "task.h"
 // #define ERROR -1000
 
-typedef struct QNode node;
+typedef struct QNode
+{
+    TASK *task;
+    struct QNode *next;
+} node;
 
 //Queue
 node *addToQueue(node *head, TASK *task);

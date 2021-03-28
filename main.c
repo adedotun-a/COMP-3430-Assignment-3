@@ -331,7 +331,7 @@ TASK *MLFQueue()
     {
         temp = queue0;
         queue0 = queue0->next;
-        return temp->t;
+        return temp->task;
     }
     else if (queue1)
     {
