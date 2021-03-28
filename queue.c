@@ -11,3 +11,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "queue.h"
+
+typedef struct QUEUE
+{
+    task *t;
+    struct QUEUE *next;
+} queue;
