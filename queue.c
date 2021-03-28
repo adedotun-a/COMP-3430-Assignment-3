@@ -50,6 +50,7 @@ node *addToQueue(node *head, task *task)
     return head;
 }
 
+// bubble sort the queue for STCF
 node *sortQueue(node *head)
 {
     node *prev = head;

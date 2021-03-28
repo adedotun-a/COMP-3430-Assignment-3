@@ -30,6 +30,7 @@ int avg_priority_time[3] = {0, 0, 0};
 int policy;
 int timeSlice = MAXNUM;
 
+node *queues[3];
 node *queue0; //priority 0 queue (high)
 node *queue1; //priority 1  queue (med)
 node *queue2; //priority 2 squeue (low)
