@@ -30,9 +30,9 @@ int avg_priority_time[3] = {0, 0, 0};
 int policy;
 int timeSlice = MAXNUM;
 
-node *queue0; //highest queue (priority 2)
-node *queue1; //medium priority queue
-node *queue2; //low priority queue
+node *queue0; //priority 0 queue (high)
+node *queue1; //priority 1  queue (med)
+node *queue2; //priority 2 squeue (low)
 
 //declaring condition variables
 pthread_cond_t task_avail = PTHREAD_COND_INITIALIZER;
@@ -197,7 +197,7 @@ void *CPU()
                 pthread_mutex_unlock(&lock2);
             }
             else
-            { //return task to scheduler
+            { //return task the running scheduler
 
                 pthread_mutex_lock(&lock);
                 returnTask(currTask);
