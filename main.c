@@ -43,6 +43,8 @@ pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
 pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
 
+void initQueue();
+
 // typedef enum ID
 // {
 //     shortTask,
@@ -73,7 +75,7 @@ int main(int argc, char *argv[])
 {
     if (argc < 3) //Check if commandline arguments are valid
     {
-        printf("The no of CPUs and chosen scheduling policy are missing\n");
+        printf("Please enter the no of CPUs and chosen scheduling policy\n");
         return -1;
     }
 
@@ -81,6 +83,7 @@ int main(int argc, char *argv[])
     if (strcmp(argv[2], "rr") == 0)
     {
         policy = PRR;
+        printf("the chosen policy is PRR\n");
     }
     else if (strcmp(argv[2], "stcf") == 0)
     {
@@ -92,10 +95,10 @@ int main(int argc, char *argv[])
     }
     else
     {
-        printf("Enter valid policy\n");
+        printf("Please enter a valid policy\n");
         return -1;
     }
-    void initQueue();
+    initQueue();
     num_of_cores += 0;
     // pthread_t *cpu_ids = malloc(sizeof(pthread_t) * num_of_cores);
     // for (int i = 0; i < num_of_cores; i++) //create threads for CPUS
@@ -141,15 +144,17 @@ void initQueue()
 {
     // char buffer[MAXNUM];
     // char *data[6];
-    FILE *file;
+    printf("Initializing the queue\n");
+    FILE *file = fopen("tasks.txt", "r");
+    printf("Starting to read file");
     // char path[3 + strlen(filename)];
     // strcpy(path, "./");
     // strcat(path, filename);
-    file = fopen("tasks.txt", "r");
+    // file = fopen("tasks.txt", "r");
 
     if (file == NULL)
     {
-        perror("Unable to open file!");
+        printf("I/O Error, unable to open file!\n");
         exit(1);
     }
 
@@ -184,7 +189,7 @@ void initQueue()
     //     }
     // }
     task *temp = malloc(sizeof(task));
-    while (fscanf(file, "%s %d %d %d %d\n", temp->taskName, &(temp->taskType), &(temp->priority), &(temp->taskLength), &(temp->oddsOfIO)))
+    while (fscanf(file, "%s %d %d %d %d\n", temp->taskName, &(temp->taskType), &(temp->priority), &(temp->taskLength), &(temp->oddsOfIO)) == 5)
     {
         printf("%s %d %d %d %d\n", temp->taskName, temp->taskType, temp->priority, temp->taskLength, temp->oddsOfIO);
         if (policy == MLQ)
