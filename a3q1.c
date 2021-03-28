@@ -27,9 +27,9 @@ int avg_priority_time[3] = {0, 0, 0};
 
 int policy;
 
-node *ready_Q; //highest queue (priority 2)
-node *queue1;  //medium priority queue
-node *queue0;  //low priority queue
+node *queue0; //highest queue (priority 2)
+node *queue1; //medium priority queue
+node *queue2; //low priority queue
 
 //declaring condition variables
 pthread_cond_t task_avail = PTHREAD_COND_INITIALIZER;
@@ -92,16 +92,16 @@ void *dispatcher()
     pthread_exit(NULL);
 }
 
-void populate_ready_queue(char *fname)
+void initQueue(char *filename)
 {
     // int in = 0;
     FILE *file;
     // int bufferSize = 100;
     // char buffer[bufferSize];
-    char path[3 + strlen(fname)];
+    char path[3 + strlen(filename)];
     strcpy(path, "./");
-    strcat(path, fname);
-    file = fopen(fname, "r");
+    strcat(path, filename);
+    file = fopen(filename, "r");
     if (file == NULL)
     {
         perror("Unable to open file!");
@@ -113,33 +113,33 @@ void populate_ready_queue(char *fname)
     while (getline(&line, &len, file) != -1)
     {
 
-        task *t = malloc(sizeof(task));
+        task *temp = malloc(sizeof(task));
 
-        strcpy(t->task_name, strtok(line, " "));
-        t->taskType = atoi(strtok(NULL, " "));
-        t->priority = atoi(strtok(NULL, " "));
-        t->task_length = atoi(strtok(NULL, " "));
-        t->odds_of_IO = atoi(strtok(NULL, "\n"));
+        strcpy(temp->task_name, strtok(line, " "));
+        temp->taskType = atoi(strtok(NULL, " "));
+        temp->priority = atoi(strtok(NULL, " "));
+        temp->task_length = atoi(strtok(NULL, " "));
+        temp->odds_of_IO = atoi(strtok(NULL, "\n"));
 
-        if (policy == MLFQ)
+        if (policy == MLQ)
         {
 
-            if (t->priority == 0)
+            if (temp->priority == 0)
             {
-                queue0 = addToReadyQ(queue0, t);
+                queue0 = addToReadyQ(queue0, temp);
             }
-            else if (t->priority == 1)
+            else if (temp->priority == 1)
             {
-                queue1 = addToReadyQ(queue1, t);
+                queue1 = addToReadyQ(queue1, temp);
             }
             else
             {
-                ready_Q = addToReadyQ(ready_Q, t);
+                queue2 = addToReadyQ(queue2, temp);
             }
         }
         else
         {
-            ready_Q = addToReadyQ(ready_Q, t);
+            queue0 = addToReadyQ(queue0, temp);
         }
     }
 }
