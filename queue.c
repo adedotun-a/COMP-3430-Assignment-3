@@ -18,9 +18,9 @@ typedef struct QNode
     struct QNode *next;
 } node;
 
-struct QNode *newNode(task *task)
+node *newNode(task *task)
 {
-    struct QNode *temp = (node *)malloc(sizeof(queue));
+    node *temp = (node *)malloc(sizeof(queue));
     temp->task = task;
     temp->next = NULL;
     return temp;
@@ -29,10 +29,7 @@ struct QNode *newNode(task *task)
 node *addToQueue(node *head, task *task)
 {
 
-    node *curr = head;
-    node *new_task = (node *)malloc(sizeof(queue));
-    new_task->task = task;
-    new_task->next = NULL;
+    node *new_task = newNode(task);
 
     // if queue is empty
     if (head == NULL)
@@ -41,11 +38,44 @@ node *addToQueue(node *head, task *task)
     }
     else
     {
-        while (curr->next)
+        node *curr = head;
+        while (curr->next != NULL)
         {
             curr = curr->next;
         }
         curr->next = new_task;
+    }
+
+    return head;
+}
+
+node *sortQueue(node *head)
+{
+    node *current = head;
+    node *index = NULL;
+    task *temp = NULL;
+
+    if (head != NULL)
+    {
+        while (current != NULL)
+        {
+            //Node index will point to node next to current
+            index = current->next;
+
+            while (index != NULL)
+            {
+                //If current node's data is greater than index's node data, swap the data between them
+                if (current->task->task_length > index->task->task_length)
+                {
+                    //swap
+                    temp = current->task;
+                    current->task = index->task;
+                    index->task = temp;
+                }
+                index = index->next;
+            }
+            current = current->next;
+        }
     }
 
     return head;
