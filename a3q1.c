@@ -159,29 +159,12 @@ void *CPU()
         if (tempTask != NULL)
         {
 
-            int num = -1;
-            if (tempTask->taskType == 3) //IO task
+            int num = rand() % 100;
+            if (tempTask->taskType == ioTask && num > tempTask->odds_of_IO) //IO task
             {
-                num = rand() % 100;
-                if (num > tempTask->odds_of_IO) //IO will occur now
-                {
-                    num = rand() % timeSlice;
-                    tempTask->task_length = tempTask->task_length - num;
-                    local_time += num;
-                }
-                else
-                {
-                    if (tempTask->task_length > timeSlice)
-                    {
-                        tempTask->task_length = tempTask->task_length - timeSlice;
-                        local_time += timeSlice;
-                    }
-                    else
-                    {
-                        local_time += tempTask->task_length;
-                        tempTask->task_length = 0;
-                    }
-                }
+                num = rand() % timeSlice;
+                tempTask->task_length = tempTask->task_length - num;
+                local_time += num;
             }
             else
             {
