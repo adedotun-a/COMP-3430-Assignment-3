@@ -29,12 +29,12 @@ node *newNode(task *task)
 node *addToQueue(node *head, task *task)
 {
 
-    node *new_task = newNode(task);
+    node *newTask = newNode(task);
 
     // if queue is empty
     if (head == NULL)
     {
-        head = new_task;
+        head = newTask;
     }
     // else if queue is not empty
     else
@@ -44,7 +44,7 @@ node *addToQueue(node *head, task *task)
         {
             curr = curr->next;
         }
-        curr->next = new_task;
+        curr->next = newTask;
     }
 
     return head;

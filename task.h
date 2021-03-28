@@ -15,7 +15,7 @@ typedef enum ID
 //task struct
 typedef struct TASK
 {
-    char *taskName;
+    char taskName[100];
     taskType taskType;
     int priority;
     int taskLength;
