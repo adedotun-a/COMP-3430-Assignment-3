@@ -184,7 +184,7 @@ void initQueue()
     //     }
     // }
     task *temp = malloc(sizeof(task));
-    while (fscanf(file, "%s %d %d %d %d\n", temp->taskName, temp->taskType, temp->priority, temp->taskLength, temp->oddsOfIO))
+    while (fscanf(file, "%s %d %d %d %d\n", temp->taskName, &(temp->taskType), &(temp->priority), &(temp->taskLength), &(temp->oddsOfIO)))
     {
         printf("%s %d %d %d %d\n", temp->taskName, temp->taskType, temp->priority, temp->taskLength, temp->oddsOfIO);
         if (policy == MLQ)
