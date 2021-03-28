@@ -19,10 +19,10 @@ a3q1: main.o queue.o
 	$(CC) main.o queue.o -o a3q1
 
 main.o: main.c queue.h
-	$(CC) $(CFLAGS)  main.c queue.h
+	$(CC) $(CFLAGS)  main.c queue.h task.h
 
 Queue.o: Queue.c queue.h
 	$(CC) $(CFLAGS)  queue.c task.h
 
 clean:
-	rm a3q1 main.o queue.o queue.h.gch
+	rm a3q1 main.o queue.o queue.h.gch task.h.gch

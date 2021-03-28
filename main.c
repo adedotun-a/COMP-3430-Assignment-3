@@ -43,6 +43,31 @@ pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
 pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
 
+// typedef enum ID
+// {
+//     shortTask,
+//     medTask,
+//     longTask,
+//     ioTask
+// } taskType;
+
+// //task struct
+// typedef struct TASK
+// {
+//     char *taskName;
+//     taskType taskType;
+//     int priority;
+//     int taskLength;
+//     int oddsOfIO;
+// } task;
+
+// typedef enum POLICY
+// {
+//     PRR,
+//     STCF,
+//     MLQ,
+// } policy;
+
 // main
 int main(int argc, char *argv[])
 {
