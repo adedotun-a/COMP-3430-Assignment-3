@@ -17,3 +17,28 @@ typedef struct QUEUE
     task *t;
     struct QUEUE *next;
 } queue;
+
+queue *addToQueue(queue *head, task *t)
+{
+
+    queue *current = head;
+    queue *new_task = (queue *)malloc(sizeof(queue));
+    new_task->t = t;
+    new_task->next = NULL;
+
+    if (head == NULL)
+    {
+
+        head = new_task;
+
+        return head;
+    }
+
+    while (current->next)
+    {
+        current = current->next;
+    }
+    current->next = new_task;
+
+    return head;
+}
