@@ -10,12 +10,12 @@
 # 	rm queue
 
 CC=clang
-CFLAGS=-c -Wall -Wpedantic -Wextra -Werror
+CFLAGS=-c -Wall -pthread -Wpedantic -Wextra -Werror
 
 all: a3q1
 
 a3q1: main.o queue.o 
-	$(CC)  main.o queue.o -o a3q1
+	$(CC)  main.o queue.o -o a3q1 -pthread
 
 main.o: main.c task.h queue.h
 	$(CC) $(CFLAGS) main.c task.h queue.h
