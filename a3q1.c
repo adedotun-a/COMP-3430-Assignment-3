@@ -144,7 +144,7 @@ void initQueue(char *filename)
 
 void *CPU()
 {
-    int local_time = 0;
+    int runTime = 0;
     int flag = 1;
 
     while (flag == 1)
@@ -160,22 +160,22 @@ void *CPU()
         {
 
             int num = rand() % 100;
-            if (tempTask->taskType == ioTask && num > tempTask->odds_of_IO) //IO task
+            if (tempTask->taskType == ioTask && num < tempTask->odds_of_IO) // if the tasks is an IO task
             {
                 num = rand() % timeSlice;
                 tempTask->task_length = tempTask->task_length - num;
-                local_time += num;
+                runTime += num;
             }
             else
             {
                 if (tempTask->task_length > timeSlice)
                 {
                     tempTask->task_length = tempTask->task_length - timeSlice;
-                    local_time += timeSlice;
+                    runTime += timeSlice;
                 }
                 else
                 {
-                    local_time += tempTask->task_length;
+                    runTime += tempTask->task_length;
                     tempTask->task_length = 0;
                 }
             }
@@ -184,7 +184,7 @@ void *CPU()
             {
                 metrics s;
                 s.priority = tempTask->priority;
-                s.time = local_time;
+                s.time = runTime;
                 s.type = tempTask->taskType;
 
                 pthread_mutex_lock(&lock2);
