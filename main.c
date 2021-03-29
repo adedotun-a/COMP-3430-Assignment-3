@@ -47,8 +47,8 @@ void *CPU();
 void printMetrics();
 TASK *getTask();
 void returnTask(TASK *t);
-TASK *SJF();
-TASK *roundRobin();
+// TASK *SJF();
+TASK *defaultQueue();
 TASK *MLFQueue();
 void *dispatcher();
 
@@ -261,11 +261,11 @@ TASK *getTask()
     TASK *t = NULL;
     if (policy == PRR)
     {
-        t = roundRobin();
+        t = defaultQueue();
     }
     else if (policy == STCF)
     {
-        t = SJF();
+        t = defaultQueue();
     }
     else if (policy == MLQ)
     {
@@ -304,25 +304,25 @@ void returnTask(TASK *t) //task returned to scheduler
     }
 }
 
-TASK *SJF()
-{ //return shortest task i.e. on the queue head
-    node *temp;
-    if (queue0)
-    {
-        printf("shortest task working on %s \n", queue0->task->taskName);
-        temp = queue0;
-        queue0 = queue0->next;
-        return temp->task;
-    }
-    return NULL;
-}
+// TASK *SJF()
+// { //return shortest task i.e. on the queue head
+//     node *temp;
+//     if (queue0)
+//     {
+//         printf("shortest task working on %s \n", queue0->task->taskName);
+//         temp = queue0;
+//         queue0 = queue0->next;
+//         return temp->task;
+//     }
+//     return NULL;
+// }
 
-TASK *roundRobin()
+TASK *defaultQueue()
 {
     node *temp;
     if (queue0)
     {
-        // printf("Round Robin working on %s and time is %d\n", queue0->task->taskName, queue0->task->taskLength);
+        printf("Round Robin working on %s and time is %d\n", queue0->task->taskName, queue0->task->taskLength);
         temp = queue0;
         queue0 = queue0->next;
         printf("The curent head is %s and time is %d\n", queue0->task->taskName, queue0->task->taskLength);
