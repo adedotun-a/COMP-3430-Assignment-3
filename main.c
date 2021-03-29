@@ -29,8 +29,6 @@ int totalPriorityTime[3] = {0, 0, 0};
 POLICY policy;
 int timeSlice = 5;
 
-int run = 1;
-
 node *queues[3];
 node *queue0; //priority 0 queue (high)
 node *queue1; //priority 1  queue (med)
@@ -145,20 +143,20 @@ void initQueue()
         {
             if (temp->priority == 0)
             {
-                queue0 = addToQueue(queue0, temp);
+                queue0 = enQueue(queue0, temp);
             }
             else if (temp->priority == 1)
             {
-                queue1 = addToQueue(queue1, temp);
+                queue1 = enQueue(queue1, temp);
             }
             else
             {
-                queue2 = addToQueue(queue2, temp);
+                queue2 = enQueue(queue2, temp);
             }
         }
         else
         {
-            queue0 = addToQueue(queue0, temp);
+            queue0 = enQueue(queue0, temp);
         }
     }
 }
@@ -175,17 +173,18 @@ void *CPU()
         pthread_cond_wait(&task_avail, &lock); //conditional waiting for the task
 
         TASK *currTask = getTask();
+
         pthread_mutex_unlock(&lock);
 
         if (currTask != NULL)
         {
-
-            int num = rand() % MAXNUM;
-            if (currTask->taskType == ioTask && num < currTask->oddsOfIO) // if the tasks is an IO task
+            printf("The name of the current task is %s , its priority is %d\n", currTask->taskName, currTask->priority);
+            int randInt = rand() % MAXNUM;
+            if (currTask->taskType == ioTask && randInt < currTask->oddsOfIO) // if the tasks is an IO task
             {
-                num = rand() % timeSlice;
-                currTask->taskLength = currTask->taskLength - num;
-                runTime += num;
+                randInt = rand() % timeSlice;
+                currTask->taskLength -= randInt;
+                runTime += randInt;
             }
             else
             {
@@ -193,7 +192,7 @@ void *CPU()
                 if (currTask->taskLength > timeSlice)
                 {
                     // reduce the tasklength by time slice, then the runtime should increrase by timeslice
-                    currTask->taskLength = currTask->taskLength - timeSlice;
+                    currTask->taskLength -= timeSlice;
                     runTime += timeSlice;
                 }
                 else
@@ -272,8 +271,6 @@ TASK *getTask()
     {
         t = MLFQueue();
     }
-    if (t)
-        run--;
     return t;
 }
 
@@ -281,12 +278,12 @@ void returnTask(TASK *t) //task returned to scheduler
 {                        //place the task back in the queue
     if (policy == PRR)
     {
-        queue0 = addToQueue(queue0, t);
+        queue0 = enQueue(queue0, t);
     }
     else if (policy == STCF)
     {
 
-        queue0 = addToQueue(queue0, t);
+        queue0 = enQueue(queue0, t);
         queue0 = sortQueue(queue0);
     }
     else
@@ -294,22 +291,17 @@ void returnTask(TASK *t) //task returned to scheduler
 
         if (t->priority == 0)
         {
-            queue0 = addToQueue(queue0, t);
+            queue0 = enQueue(queue0, t);
         }
         else if (t->priority == 1)
         {
-            queue1 = addToQueue(queue1, t);
+            queue1 = enQueue(queue1, t);
         }
         else
         {
-            queue2 = addToQueue(queue2, t);
+            queue2 = enQueue(queue2, t);
         }
     }
-    run++;
-    // if (queue0 || queue1 || queue2)
-    // {
-    //     // dispatcher();
-    // }
 }
 
 TASK *SJF()
@@ -317,6 +309,7 @@ TASK *SJF()
     node *temp;
     if (queue0)
     {
+        printf("shortest task working on %s \n", queue0->task->taskName);
         temp = queue0;
         queue0 = queue0->next;
         return temp->task;
@@ -326,10 +319,10 @@ TASK *SJF()
 
 TASK *roundRobin()
 {
-
     node *temp;
     if (queue0)
     {
+        printf("Round Robin working on %s \n", queue0->task->taskName);
         temp = queue0;
         queue0 = queue0->next;
         return temp->task;

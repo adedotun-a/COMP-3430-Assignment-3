@@ -14,6 +14,6 @@ typedef struct QNode
 } node;
 
 //Queue
-node *addToQueue(node *head, TASK *task);
+node *enQueue(node *head, TASK *task);
 node *sortQueue(node *head);
 #endif
