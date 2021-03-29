@@ -238,7 +238,7 @@ void printMetrics()
     for (int i = 0; i < 3; i++)
     {
         if (countPriority[i] > 0)
-            printf("Priority %d average run time: %d\n", i, totalPriorityTime[i] / countPriority[i]);
+            printf("Priority %d average run time: %d\n", i, totalPriorityTime[i]);
         else
         {
             printf("Priority %d average run time: %d\n", i, 0);
@@ -248,7 +248,7 @@ void printMetrics()
     for (int i = 0; i < 4; i++)
     {
         if (countType[i] > 0)
-            printf("Type %d average run time: %d\n", i, totalTypeTime[i] / countType[i]);
+            printf("Type %d average run time: %d\n", i, totalTypeTime[i]);
         else
         {
             printf("Type %d average run time: %d\n", i, 0);
