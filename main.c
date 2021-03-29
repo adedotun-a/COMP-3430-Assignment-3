@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
     printMetrics();
 }
 
-void update_metrics(int priority, int time, taskType type)
+void updateMetrics(int priority, int time, taskType type)
 {
     //update metric arrays
     countType[type] += 1;
@@ -208,7 +208,7 @@ void *CPU()
             if (currTask->taskLength <= 0)
             {
                 pthread_mutex_lock(&lock2);
-                update_metrics(currTask->priority, runTime, currTask->taskType);
+                updateMetrics(currTask->priority, runTime, currTask->taskType);
                 pthread_mutex_unlock(&lock2);
             }
             else
