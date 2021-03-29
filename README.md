@@ -10,10 +10,11 @@ cd to the directory of the submission and run the command "make"
 
 ---
 
-Use the command "./q1 executable"
-where executable is a proccess for example cat
+Use the command "./a3q1 x y"
+where x is the number of CPUs
+where y is the scheduling algorithm either rr, stcf or mlfq
 
-## Report
+## Analysis
 
 ---
 
@@ -98,3 +99,19 @@ The average priority and type times for 8 CPUs
 | :----------------: | :--------: | :------------: | :------------: | :------------: | :--------: | :--------: | :--------: | :--------: |
 |      Average       |     8      |      387       |     1241.8     |     2446.8     |    849     |   1300.2   |   1745.4   |    2144    |
 | Standard Deviation |     8      |      3.89      |      6.04      |     26.33      |   14.75    |   13.76    |   23.57    |   24.53    |
+
+Are the distributions generated significantly different?
+
+The data obtained from all the algorithms are highly statistically different in terms of run time.
+
+How did the algorithms treat the queue differently, and how is that reflected in the data?
+
+- Round Robin: Here all tasks are executed equally and thus we do not see any trend in our average run time by any priority or type.
+- STCF: Here tasks are prioritized based on their lengths. This is shown in the data, where we see that the shortest tasks were completed first.
+- MLFQ: Here we use multiple queues which are handled differently. From the data, we can see that tasks with in higher priority queues complete in shorter time
+  as compared to tasks with lower priorities
+
+How does the number of “CPU”s affect each scheduling policy?
+
+From the data, it is evident that increasing the number of CPUs reduces the average run time of all the tasks and thus, we can conclude that
+the average time of completion reduces as the number of CPUs are increased.
