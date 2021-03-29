@@ -55,6 +55,11 @@ void *dispatcher();
 // main
 int main(int argc, char *argv[])
 {
+    if (argc < 2) //Check if commandline arguments are valid
+    {
+        printf("Please enter the chosen scheduling policy\n");
+        return -1;
+    }
     if (argc < 3) //Check if commandline arguments are valid
     {
         printf("Please enter the no of CPUs and chosen scheduling policy\n");
@@ -138,7 +143,7 @@ void initQueue()
     TASK *temp = malloc(sizeof(TASK));
     while (fscanf(file, "%s %d %d %d %d\n", temp->taskName, &(temp->taskType), &(temp->priority), &(temp->taskLength), &(temp->oddsOfIO)) == 5)
     {
-        // printf("%s %d %d %d %d\n", temp->taskName, temp->taskType, temp->priority, temp->taskLength, temp->oddsOfIO);
+        temp = malloc(sizeof(TASK));
         if (policy == MLQ)
         {
             if (temp->priority == 0)
@@ -178,7 +183,6 @@ void *CPU()
 
         if (currTask != NULL)
         {
-            printf("The name of the current task is %s , its priority is %d\n", currTask->taskName, currTask->priority);
             int randInt = rand() % MAXNUM;
             if (currTask->taskType == ioTask && randInt < currTask->oddsOfIO) // if the tasks is an IO task
             {
@@ -237,7 +241,7 @@ void printMetrics()
     for (int i = 0; i < 3; i++)
     {
         if (countPriority[i] > 0)
-            printf("Priority %d average run time: %d\n", i, totalPriorityTime[i]);
+            printf("Priority %d average run time: %d\n", i, totalPriorityTime[i] / countPriority[i]);
         else
         {
             printf("Priority %d average run time: %d\n", i, 0);
@@ -247,7 +251,7 @@ void printMetrics()
     for (int i = 0; i < 4; i++)
     {
         if (countType[i] > 0)
-            printf("Type %d average run time: %d\n", i, totalTypeTime[i]);
+            printf("Type %d average run time: %d\n", i, totalTypeTime[i] / countType[i]);
         else
         {
             printf("Type %d average run time: %d\n", i, 0);
@@ -304,28 +308,13 @@ void returnTask(TASK *t) //task returned to scheduler
     }
 }
 
-// TASK *SJF()
-// { //return shortest task i.e. on the queue head
-//     node *temp;
-//     if (queue0)
-//     {
-//         printf("shortest task working on %s \n", queue0->task->taskName);
-//         temp = queue0;
-//         queue0 = queue0->next;
-//         return temp->task;
-//     }
-//     return NULL;
-// }
-
 TASK *defaultQueue()
 {
     node *temp;
     if (queue0)
     {
-        printf("Round Robin working on %s and time is %d\n", queue0->task->taskName, queue0->task->taskLength);
         temp = queue0;
         queue0 = queue0->next;
-        printf("The curent head is %s and time is %d\n", queue0->task->taskName, queue0->task->taskLength);
         return temp->task;
     }
     return NULL;

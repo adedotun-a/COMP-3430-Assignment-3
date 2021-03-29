@@ -22,7 +22,6 @@ node *newNode(TASK *task)
 
 node *enQueue(node *head, TASK *task)
 {
-
     node *newTask = newNode(task);
 
     // if queue is empty
@@ -33,8 +32,8 @@ node *enQueue(node *head, TASK *task)
     // else if queue is not empty
     else
     {
-        // printf("%s %d %d %d %d\n", head->task->taskName, head->task->taskType, head->task->priority, head->task->taskLength, head->task->oddsOfIO);
         node *curr = head;
+        // traverse queue till the end
         while (curr->next != NULL)
         {
             curr = curr->next;
