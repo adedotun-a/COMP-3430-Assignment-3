@@ -322,9 +322,10 @@ TASK *roundRobin()
     node *temp;
     if (queue0)
     {
-        printf("Round Robin working on %s \n", queue0->task->taskName);
+        // printf("Round Robin working on %s and time is %d\n", queue0->task->taskName, queue0->task->taskLength);
         temp = queue0;
         queue0 = queue0->next;
+        printf("The curent head is %s and time is %d\n", queue0->task->taskName, queue0->task->taskLength);
         return temp->task;
     }
     return NULL;
