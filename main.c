@@ -29,13 +29,12 @@ int totalPriorityTime[3] = {0, 0, 0};
 POLICY policy;
 int timeSlice = 5;
 
-node *queues[3];
 node *queue0; //priority 0 queue (high)
 node *queue1; //priority 1  queue (med)
 node *queue2; //priority 2 squeue (low)
 
 //declaring condition variables
-pthread_cond_t task_avail = PTHREAD_COND_INITIALIZER;
+pthread_cond_t availableTask = PTHREAD_COND_INITIALIZER;
 pthread_cond_t cpu_avail = PTHREAD_COND_INITIALIZER;
 // declaring mutex
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
@@ -45,11 +44,11 @@ pthread_mutex_t lock2 = PTHREAD_MUTEX_INITIALIZER;
 void initQueue();
 void *CPU();
 void printMetrics();
-TASK *getTask();
-void returnTask(TASK *t);
+TASK *getNextTask();
+void returnToQueue(TASK *t);
 // TASK *SJF();
-TASK *defaultQueue();
-TASK *MLFQueue();
+TASK *defaultDeQueue();
+TASK *MLFDeQueue();
 void *dispatcher();
 
 // main
@@ -98,7 +97,7 @@ int main(int argc, char *argv[])
 
     pthread_t tid1;
 
-    pthread_create(&tid1, NULL, dispatcher, NULL); //create thread for sheduler
+    pthread_create(&tid1, NULL, dispatcher, NULL); //create thread that runs the scheduler
     for (int i = 0; i < numCores; i++)
     {
         pthread_join(pIds[i], NULL);
@@ -122,7 +121,7 @@ void *dispatcher()
     {
         pthread_mutex_lock(&lock);
 
-        pthread_cond_signal(&task_avail);
+        pthread_cond_signal(&availableTask);
 
         pthread_mutex_unlock(&lock);
     }
@@ -132,6 +131,7 @@ void *dispatcher()
 
 void initQueue()
 {
+    // read the fil and initialize the queue
     FILE *file = fopen("tasks.txt", "r");
 
     if (file == NULL)
@@ -176,9 +176,9 @@ void *CPU()
     {
 
         pthread_mutex_lock(&lock);
-        pthread_cond_wait(&task_avail, &lock); //conditional waiting for the task
+        pthread_cond_wait(&availableTask, &lock); //conditional waiting for the task
 
-        TASK *currTask = getTask();
+        TASK *currTask = getNextTask();
 
         pthread_mutex_unlock(&lock);
 
@@ -219,7 +219,7 @@ void *CPU()
             { //return task the running scheduler
 
                 pthread_mutex_lock(&lock);
-                returnTask(currTask);
+                returnToQueue(currTask);
                 pthread_mutex_unlock(&lock);
             }
         }
@@ -260,31 +260,33 @@ void printMetrics()
     }
 }
 
-TASK *getTask()
+TASK *getNextTask()
 {
-    //provide the task to the CPU according to the policy
+    //provide the next avaialable task to the using the approipraite dequeue method
     TASK *t = NULL;
     if (policy == PRR)
     {
-        t = defaultQueue();
+        t = defaultDeQueue();
     }
     else if (policy == STCF)
     {
-        t = defaultQueue();
+        t = defaultDeQueue();
     }
     else if (policy == MLQ)
     {
-        t = MLFQueue();
+        t = MLFDeQueue();
     }
     return t;
 }
 
-void returnTask(TASK *t) //task returned to scheduler
-{                        //place the task back in the queue
+void returnToQueue(TASK *t) // return a task back in the queue
+{
+    // if the policy is PRR then place the tasks default queue (queue0)
     if (policy == PRR)
     {
         queue0 = enQueue(queue0, t);
     }
+    // if the policy is STCF then place the tasks default queue (queue0), then sort the queue
     else if (policy == STCF)
     {
 
@@ -293,7 +295,7 @@ void returnTask(TASK *t) //task returned to scheduler
     }
     else
     {
-
+        // if the policy is MLFQ then place the tasks in their appriopriate queues
         if (t->priority == 0)
         {
             queue0 = enQueue(queue0, t);
@@ -309,8 +311,10 @@ void returnTask(TASK *t) //task returned to scheduler
     }
 }
 
-TASK *defaultQueue()
+// dequeue method for PRR and STCF
+TASK *defaultDeQueue()
 {
+    // remove the task at the top of the queue
     node *temp;
     if (queue0)
     {
@@ -321,9 +325,10 @@ TASK *defaultQueue()
     return NULL;
 }
 
-TASK *MLFQueue()
+// dequeue method for MLF
+TASK *MLFDeQueue()
 {
-    //return task from lower queues only if higher queues are empty
+    //return task from lower priority queues if higher priority queues are empty
     node *temp;
     if (queue0)
     {
