@@ -164,6 +164,7 @@ void initQueue()
             queue0 = enQueue(queue0, temp);
         }
     }
+    fclose("tasks.txt");
 }
 
 void *CPU()
